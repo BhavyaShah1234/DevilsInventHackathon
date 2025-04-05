@@ -12,7 +12,6 @@ const ControlPage: React.FC = () => {
   const [signalStrength, setSignalStrength] = useState(65);
   const [cpuUsage, setCpuUsage] = useState(42);
   const [memoryUsage, setMemoryUsage] = useState(58);
-  const [showLiveMap, setShowLiveMap] = useState(false);
   const [robotPosition, setRobotPosition] = useState({ x: 150, y: 200 });
   const [direction, setDirection] = useState<'right' | 'down'>('right');
   const [isEmergencyStopped, setIsEmergencyStopped] = useState(false);
@@ -71,27 +70,8 @@ const ControlPage: React.FC = () => {
   }, [isRunningInventory, robotPosition, direction]);
 
   const handleRunInventory = () => {
-    setShowLiveMap(true);
     setIsRunningInventory(true);
   };
-
-  const handleToggleDataCollection = () => {
-    setIsDataCollectionActive(!isDataCollectionActive);
-  };
-
-  const handleToggleTracking = () => {
-    setIsTracking(!isTracking);
-  };
-
-  const handleSecurityLevel = (level: 'low' | 'medium' | 'high') => {
-    setSecurityLevel(level);
-  };
-
-  const ProgressBar = ({ value }: { value: number }) => (
-    <div className="w-full bg-gray-700 h-2 rounded-full overflow-hidden">
-      <div className="h-full bg-blue-500" style={{ width: `${value}%` }} />
-    </div>
-  );
 
   return (
     <RobotDashboardLayout 
@@ -100,6 +80,7 @@ const ControlPage: React.FC = () => {
       currentPage="control"
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Left Column */}
         <div className="space-y-6">
           <div className="bg-gray-800/50 p-4 rounded-lg border border-gray-700">
             <div className="flex justify-between items-center mb-4">
@@ -110,101 +91,78 @@ const ControlPage: React.FC = () => {
                 System Ready
               </span>
             </div>
-            <p className="text-sm text-gray-400 mb-4">
-              Run a full inventory scan to detect and catalog objects
-            </p>
-            <button
-              onClick={handleRunInventory}
-              disabled={isRunningInventory || isEmergencyStopped}
-              className={`w-full py-2 px-4 rounded flex items-center justify-center gap-2 ${
-                isRunningInventory || isEmergencyStopped
-                  ? 'bg-gray-700 cursor-not-allowed'
-                  : 'bg-blue-600 hover:bg-blue-700'
-              }`}
-            >
-              {isRunningInventory ? (
-                <>
-                  <RotateCw className="animate-spin h-4 w-4" /> 
-                  Scanning...
-                </>
-              ) : (
-                <>
-                  <Play className="h-4 w-4" /> 
-                  Run Inventory Scan
-                </>
-              )}
-            </button>
-            {showLiveMap && (
-              <div className="mt-6">
-                <h2 className="text-white text-lg font-semibold mb-2">Live Robot Map</h2>
-                <div className="relative w-full max-w-[900px] h-[600px] border border-gray-600 rounded overflow-hidden mx-auto">
-                  <img
-                    src="/map.png"
-                    alt="Factory Map"
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="fixed bottom-4 right-4 bg-gray-800/90 text-white text-sm px-3 py-1 rounded shadow-lg z-50">
-                    🔋 Battery: {batteryLevel}%
-                  </div>
-                  {obstacles.map((obs, i) => (
-                    <div
-                      key={i}
-                      className="absolute bg-red-500/30 border border-red-500"
-                      style={{
-                        top: obs.y,
-                        left: obs.x,
-                        width: obs.width,
-                        height: obs.height,
-                      }}
-                    />
-                  ))}
-                  <div
-                    className="absolute w-6 h-6 bg-red-500 border-2 border-white rounded-full shadow-lg"
-                    style={{
-                      top: `${robotPosition.y}px`,
-                      left: `${robotPosition.x}px`,
-                      transform: 'translate(-50%, -50%)',
-                    }}
-                  />
-                </div>
-                <div className="mt-4 flex gap-4 justify-center">
-                  <button
-                    onClick={() => {
-                      setIsRunningInventory(false);
-                      setIsEmergencyStopped(true);
-                    }}
-                    className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
-                  >
-                    🛑 Emergency Stop
-                  </button>
-                  <button
-                    onClick={() => setIsRunningInventory(true)}
-                    disabled={isEmergencyStopped}
-                    className={`px-4 py-2 rounded ${
-                      isEmergencyStopped
-                        ? 'bg-gray-600 cursor-not-allowed'
-                        : 'bg-blue-600 hover:bg-blue-700'
-                    } text-white`}
-                  >
-                    ▶️ Resume
-                  </button>
-                  <button
-                    onClick={() => setIsRunningInventory(false)}
-                    className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded"
-                  >
-                    ⏸ Pause
-                  </button>
-                </div>
-                <div className="mt-6 flex justify-center">
-                  <button
-                    onClick={() => navigate('/inventory')}
-                    className="bg-yellow-600 hover:bg-yellow-700 text-white px-5 py-2 rounded shadow"
-                  >
-                    🔍 View Inspection
-                  </button>
-                </div>
+            <h2 className="text-white text-lg font-semibold mb-2">Live Robot Map</h2>
+            <div className="relative w-full max-w-[900px] h-[600px] border border-gray-600 rounded overflow-hidden mx-auto">
+              <img
+                src="/map.png"
+                alt="Factory Map"
+                className="w-full h-full object-cover"
+              />
+              <div className="fixed bottom-4 right-4 bg-gray-800/90 text-white text-sm px-3 py-1 rounded shadow-lg z-50">
+                🔋 Battery: {batteryLevel}%
               </div>
+              {obstacles.map((obs, i) => (
+                <div
+                  key={i}
+                  className="absolute bg-red-500/30 border border-red-500"
+                  style={{
+                    top: obs.y,
+                    left: obs.x,
+                    width: obs.width,
+                    height: obs.height,
+                  }}
+                />
+              ))}
+              <div
+                className="absolute w-6 h-6 bg-red-500 border-2 border-white rounded-full shadow-lg"
+                style={{
+                  top: `${robotPosition.y}px`,
+                  left: `${robotPosition.x}px`,
+                  transform: 'translate(-50%, -50%)',
+                }}
+              />
+            </div>
+            <div className="mt-4 flex gap-4 justify-center">
+              <button
+                onClick={() => {
+                  setIsRunningInventory(false);
+                  setIsEmergencyStopped(true);
+                }}
+                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
+              >
+                🛑 Emergency Stop
+              </button>
+              <button
+                onClick={handleRunInventory}
+                disabled={isEmergencyStopped}
+                className={`px-4 py-2 rounded ${
+                  isEmergencyStopped
+                    ? 'bg-gray-600 cursor-not-allowed'
+                    : 'bg-blue-600 hover:bg-blue-700'
+                } text-white`}
+              >
+                ▶️ Start Robot
+              </button>
+              <button
+                onClick={() => setIsRunningInventory(false)}
+                className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded"
+              >
+                ⏸ Pause
+              </button>
+            </div>
+            {isEmergencyStopped && (
+              <p className="text-red-400 text-center mt-4">
+                ⚠️ Emergency stop activated. Robot has stopped. Please restart the system.
+              </p>
             )}
+            <div className="mt-6 flex justify-center">
+              <button
+                onClick={() => navigate('/inventory')}
+                className="bg-yellow-600 hover:bg-yellow-700 text-white px-5 py-2 rounded shadow"
+              >
+                🔍 View Inspection
+              </button>
+            </div>
           </div>
         </div>
 
