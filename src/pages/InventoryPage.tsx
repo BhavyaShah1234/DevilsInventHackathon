@@ -116,8 +116,6 @@ const InventoryPage: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-gray-950 text-white p-4 md:p-8">
       <Navbar />
       <header className="mb-8">
-        <h1 className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Robot Inventory</h1>
-        <p className="text-gray-400 mt-2">Manage and track robot components</p>
       </header>
 
      
