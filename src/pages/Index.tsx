@@ -1,14 +1,59 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Box, Home, Sliders } from 'lucide-react';
+import { Box, Home, Sliders, User } from 'lucide-react';
+import Navbar from '@/components/Navbar';
 
 const Index: React.FC = () => {
+  const [showLogin, setShowLogin] = useState(false);
+
+  const toggleLogin = () => setShowLogin(!showLogin);
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-gray-950 text-white p-4 md:p-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-gray-950 text-white p-4 md:p-8 relative">
+      {/* Sign-In Popup */}
+      {showLogin && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-80">
+            <h2 className="text-lg font-semibold mb-4">Sign In</h2>
+            <input
+              type="text"
+              placeholder="Username"
+              className="w-full mb-3 px-3 py-2 rounded bg-gray-700 text-white border border-gray-600 focus:outline-none"
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              className="w-full mb-4 px-3 py-2 rounded bg-gray-700 text-white border border-gray-600 focus:outline-none"
+            />
+            <div className="flex justify-between">
+              <button
+                className="bg-blue-600 hover:bg-blue-700 text-white py-1 px-4 rounded"
+              >
+                Login
+              </button>
+              <button
+                className="text-sm text-gray-400 hover:underline"
+                onClick={toggleLogin}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
-      <header className="mb-8">
-        <h1 className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Robot Information</h1>
-        <p className="text-gray-400 mt-2">System status and specifications</p>
+      <header className="mb-8 flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Robot Information</h1>
+          <p className="text-gray-400 mt-2">System status and specifications</p>
+        </div>
+        <button
+          onClick={toggleLogin}
+          className="flex items-center gap-2 px-3 py-2 bg-gray-800 border border-gray-700 rounded hover:bg-gray-700"
+        >
+          <User size={16} /> <span className="text-sm">Sign In</span>
+        </button>
       </header>
 
       {/* Navigation */}
