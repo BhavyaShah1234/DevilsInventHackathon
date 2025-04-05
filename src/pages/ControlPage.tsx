@@ -16,7 +16,12 @@ const ControlPage: React.FC = () => {
   const [robotPosition, setRobotPosition] = useState({ x: 150, y: 200 });
   const [direction, setDirection] = useState<'right' | 'down'>('right');
   const [isEmergencyStopped, setIsEmergencyStopped] = useState(false);
+  const [isCameraOn, setIsCameraOn] = useState(false);
   const navigate = useNavigate();
+
+  const handleStartCamera = () => {
+    setIsCameraOn(true);
+  };
 
   const obstacles = [
     { x: 280, y: 250, width: 100, height: 90 },
@@ -190,11 +195,6 @@ const ControlPage: React.FC = () => {
                     ⏸ Pause
                   </button>
                 </div>
-                {isEmergencyStopped && (
-                  <div className="mt-4 text-center text-red-400 text-sm font-medium">
-                    ⚠️ Emergency Stop activated. You have stopped the robot. Please restart the system to resume operations.
-                  </div>
-                )}
                 <div className="mt-6 flex justify-center">
                   <button
                     onClick={() => navigate('/inventory')}
@@ -206,13 +206,39 @@ const ControlPage: React.FC = () => {
               </div>
             )}
           </div>
-
-          {/* Data Collection and Tracking Panels go here */}
-
         </div>
 
-        {/* Right Column - System Status & Security goes here */}
-
+        {/* Right Column - Live Camera Feed */}
+        <div className="space-y-6">
+          <div className="bg-gray-800/50 p-4 rounded-lg border border-gray-700">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-medium text-white">Live Camera Feed</h2>
+              <button
+                onClick={handleStartCamera}
+                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded shadow"
+              >
+                🎥 Start Live Camera
+              </button>
+            </div>
+            <div className="w-full h-[500px] flex justify-center items-center overflow-hidden bg-black rounded-lg">
+              {isCameraOn && (
+                <video
+                  src="/mapvideo.mp4"
+                  autoPlay
+                  loop
+                  muted
+                  controls
+                  className="rounded"
+                  style={{
+                    width: '500px',
+                    transform: 'rotate(-90deg)',
+                    transformOrigin: 'center center',
+                  }}
+                />
+              )}
+            </div>
+          </div>
+        </div>
       </div>
     </RobotDashboardLayout>
   );
