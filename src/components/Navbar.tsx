@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Bell, User, Settings, Home, Box, Sliders, Moon, Sun } from 'lucide-react';
+import { Bell, User, Settings, Home, Box, Sliders, Moon, Sun, X } from 'lucide-react';
 
 const Navbar: React.FC = () => {
   const location = useLocation();
@@ -8,6 +8,12 @@ const Navbar: React.FC = () => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [darkMode, setDarkMode] = useState(() => localStorage.getItem('darkMode') === 'true');
+  const [viewArchived, setViewArchived] = useState(false);
+  const [notifications, setNotifications] = useState([
+    { message: 'Maintenance check due next week', time: '10:24 AM', date: '2025-04-05', archived: false },
+    { message: 'Battery Pack running low', time: '9:12 AM', date: '2025-04-04', archived: false },
+    { message: 'System firmware updated', time: '5:45 PM', date: '2025-04-03', archived: false }
+  ]);
 
   const toggleLogin = () => setShowLogin(!showLogin);
   const toggleNotifications = () => setShowNotifications(!showNotifications);
@@ -16,6 +22,18 @@ const Navbar: React.FC = () => {
     const newValue = !darkMode;
     setDarkMode(newValue);
     localStorage.setItem('darkMode', newValue.toString());
+  };
+
+  const archiveNotification = (index: number) => {
+    const updated = [...notifications];
+    updated[index].archived = true;
+    setNotifications(updated);
+  };
+
+  const restoreNotification = (index: number) => {
+    const updated = [...notifications];
+    updated[index].archived = false;
+    setNotifications(updated);
   };
 
   useEffect(() => {
@@ -63,7 +81,6 @@ const Navbar: React.FC = () => {
 
   return (
     <>
-      {/* Popups */}
       {showLogin && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-80 text-black dark:text-white">
@@ -79,13 +96,36 @@ const Navbar: React.FC = () => {
       )}
 
       {showNotifications && (
-        <div className="absolute top-20 right-6 z-50 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg p-4 w-72 shadow-xl text-black dark:text-white">
-          <h2 className="text-md font-semibold mb-2">Notifications</h2>
-          <ul className="text-sm space-y-1">
-            <li>🔧 Maintenance check due next week</li>
-            <li>⚠️ Battery Pack running low</li>
-            <li>✅ System firmware updated</li>
-          </ul>
+        <div className="fixed top-0 right-0 h-full w-80 bg-white dark:bg-gray-800 shadow-lg border-l border-gray-200 dark:border-gray-700 z-50 p-4 overflow-y-auto">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-lg font-semibold">Notifications</h2>
+            <button onClick={toggleNotifications} className="hover:opacity-70"><X size={18} /></button>
+          </div>
+          <button
+            onClick={() => setViewArchived(!viewArchived)}
+            className="mb-4 text-sm text-blue-600 dark:text-blue-400 hover:underline"
+          >
+            {viewArchived ? 'View Active' : 'View Archived'}
+          </button>
+
+          {notifications
+            .filter(n => n.archived === viewArchived)
+            .map((n, i) => (
+              <div key={i} className="mb-4 p-3 rounded-lg bg-gray-100 dark:bg-gray-700 text-sm text-black dark:text-white shadow">
+                <p className="font-medium mb-1">{n.message}</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400">{n.date} at {n.time}</p>
+                <div className="mt-2 text-right">
+                  {viewArchived ? (
+                    <button onClick={() => restoreNotification(i)} className="text-blue-600 dark:text-blue-400 text-xs hover:underline">Restore</button>
+                  ) : (
+                    <button onClick={() => archiveNotification(i)} className="text-gray-600 dark:text-gray-300 text-xs hover:underline">Archive</button>
+                  )}
+                </div>
+              </div>
+            ))}
+          {notifications.filter(n => n.archived === viewArchived).length === 0 && (
+            <p className="text-sm text-gray-500 dark:text-gray-400">No {viewArchived ? 'archived' : 'active'} notifications.</p>
+          )}
         </div>
       )}
 
