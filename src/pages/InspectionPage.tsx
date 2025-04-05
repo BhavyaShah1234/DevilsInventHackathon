@@ -60,22 +60,17 @@ const InspectionPage: React.FC = () => {
     : allReports.filter(report => report.status === statusFilter);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-gray-950 text-white p-4 md:p-8">
+    <div className="min-h-screen p-4 md:p-8 bg-gradient-to-br from-gray-100 via-gray-200 to-white text-black dark:from-gray-900 dark:via-slate-900 dark:to-gray-950 dark:text-white transition-colors">
       <Navbar />
 
       <header className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-          <h1 className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">
-            Inspection Reports
-          </h1>
-          <p className="text-gray-400 mt-2">View and manage inspection reports</p>
-        </div>
+       
 
         <div>
           <select
             value={statusFilter}
             onChange={e => setStatusFilter(e.target.value)}
-            className="bg-gray-800 border border-gray-700 text-sm rounded px-3 py-2 text-white shadow"
+            className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-sm rounded px-3 py-2 text-black dark:text-white shadow"
           >
             <option value="All">Sort by Status</option>
             <option value="Completed">Completed</option>
@@ -86,10 +81,10 @@ const InspectionPage: React.FC = () => {
         </div>
       </header>
 
-      <div className="bg-black/30 backdrop-blur-lg rounded-lg border border-gray-800 p-6">
+      <div className="bg-white dark:bg-black/30 backdrop-blur-lg rounded-lg border border-gray-300 dark:border-gray-800 p-6">
         <table className="min-w-full text-sm">
           <thead>
-            <tr className="text-left text-gray-400 border-b border-gray-700">
+            <tr className="text-left text-gray-600 dark:text-gray-400 border-b border-gray-300 dark:border-gray-700">
               <th className="py-2">Report Title</th>
               <th className="py-2">Date</th>
               <th className="py-2">Status</th>
@@ -103,20 +98,20 @@ const InspectionPage: React.FC = () => {
             {reports.map((report, index) => (
               <tr
                 key={index}
-                className="border-b border-gray-800 hover:bg-gray-800/40 transition-colors"
+                className="border-b border-gray-300 dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-gray-800/40 transition-colors"
               >
-                <td className="py-2 text-blue-300">{report.title}</td>
+                <td className="py-2 text-blue-600 dark:text-blue-300">{report.title}</td>
                 <td className="py-2">{report.date}</td>
                 <td className="py-2">
                   <span
                     className={`px-2 py-1 rounded-full text-xs font-medium ${
                       report.status === 'Completed'
-                        ? 'bg-green-700 text-green-100'
+                        ? 'bg-green-100 text-green-800 dark:bg-green-700 dark:text-green-100'
                         : report.status === 'In Progress'
-                        ? 'bg-yellow-600 text-yellow-100'
+                        ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-600 dark:text-yellow-100'
                         : report.status === 'Cancelled'
-                        ? 'bg-red-600 text-red-100'
-                        : 'bg-blue-700 text-blue-100'
+                        ? 'bg-red-100 text-red-800 dark:bg-red-600 dark:text-red-100'
+                        : 'bg-blue-100 text-blue-800 dark:bg-blue-700 dark:text-blue-100'
                     }`}
                   >
                     {report.status}
@@ -126,7 +121,7 @@ const InspectionPage: React.FC = () => {
                 <td className="py-2">{report.coverage}</td>
                 <td className="py-2">{report.findings}</td>
                 <td className="py-2">
-                  <button className="text-blue-400 hover:underline">View</button>
+                  <button className="text-blue-600 hover:underline dark:text-blue-400">View</button>
                 </td>
               </tr>
             ))}
