@@ -1,0 +1,10 @@
+[
+  {
+    "id": 1,
+    "name": "Navigation Sensor",
+    "quantity": 15,
+    "status": "available",
+    "lastUpdated": "2025-04-06T14:30:00",
+    "robotName": "SentryBot"
+  }
+]
