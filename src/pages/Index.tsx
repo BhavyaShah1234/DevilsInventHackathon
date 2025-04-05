@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Box, Home, Sliders, User, Bell, Settings } from 'lucide-react';
 
@@ -6,15 +6,31 @@ const Index: React.FC = () => {
   const [showLogin, setShowLogin] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(() => {
+    return localStorage.getItem('darkMode') === 'true';
+  });
 
   const toggleLogin = () => setShowLogin(!showLogin);
   const toggleNotifications = () => setShowNotifications(!showNotifications);
   const toggleSettings = () => setShowSettings(!showSettings);
-  const toggleDarkMode = () => setDarkMode(!darkMode);
+  const toggleDarkMode = () => {
+    const newValue = !darkMode;
+    setDarkMode(newValue);
+    localStorage.setItem('darkMode', newValue.toString());
+  };
+
+  useEffect(() => {
+    document.body.classList.toggle('dark', darkMode);
+  }, [darkMode]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-gray-950 text-white p-4 md:p-8 relative">
+    <div
+      className={`min-h-screen p-4 md:p-8 relative transition-colors duration-300 ${
+        darkMode
+          ? 'bg-gradient-to-br from-black via-gray-900 to-gray-950 text-white'
+          : 'bg-gradient-to-br from-gray-100 via-gray-200 to-white text-black'
+      }`}
+    >
       {/* Sign-In Popup */}
       {showLogin && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -96,19 +112,19 @@ const Index: React.FC = () => {
         <div className="flex gap-3">
           <button
             onClick={toggleNotifications}
-            className="flex items-center gap-2 px-3 py-2 bg-gray-800 border border-gray-700 rounded hover:bg-gray-700"
+            className="flex items-center gap-2 px-3 py-2 border rounded hover:bg-gray-700"
           >
             <Bell size={16} />
           </button>
           <button
             onClick={toggleLogin}
-            className="flex items-center gap-2 px-3 py-2 bg-gray-800 border border-gray-700 rounded hover:bg-gray-700"
+            className="flex items-center gap-2 px-3 py-2 border rounded hover:bg-gray-700"
           >
             <User size={16} /> <span className="text-sm">Sign In</span>
           </button>
           <button
             onClick={toggleSettings}
-            className="flex items-center gap-2 px-3 py-2 bg-gray-800 border border-gray-700 rounded hover:bg-gray-700"
+            className="flex items-center gap-2 px-3 py-2 border rounded hover:bg-gray-700"
           >
             <Settings size={16} />
           </button>
@@ -116,7 +132,7 @@ const Index: React.FC = () => {
       </header>
 
       {/* Navigation */}
-      <nav className="mb-8 bg-black/30 backdrop-blur-lg rounded-lg border border-gray-800 overflow-hidden">
+      <nav className="mb-8 bg-black/30 backdrop-blur-lg rounded-lg border overflow-hidden">
         <ul className="flex flex-wrap">
           <li className="flex-1">
             <Link 
@@ -185,7 +201,7 @@ const Index: React.FC = () => {
                   <span className="text-sm text-gray-300">76%</span>
                 </div>
               </div>
-
+              
               <div className="flex justify-between items-center">
                 <span className="text-sm text-gray-300">System Health</span>
                 <div className="flex items-center">
@@ -218,13 +234,13 @@ const Index: React.FC = () => {
                 <h3 className="font-medium text-blue-400">Inventory</h3>
                 <p className="text-xs text-gray-400 mt-1">Manage and track components</p>
               </Link>
-
+              
               <Link to="/control" className="bg-blue-900/30 hover:bg-blue-900/50 p-4 rounded-lg border border-blue-800 text-center transition-all">
                 <Sliders className="w-8 h-8 mx-auto mb-2 text-blue-400" />
                 <h3 className="font-medium text-blue-400">Control Center</h3>
                 <p className="text-xs text-gray-400 mt-1">Manage operations</p>
               </Link>
-
+              
               <div className="bg-gray-800/50 p-4 rounded-lg border border-gray-700 text-center">
                 <span className="inline-block p-2 rounded-full bg-gray-700/50 mx-auto mb-2">
                   <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
