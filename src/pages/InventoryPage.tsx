@@ -20,14 +20,19 @@ const InventoryPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
   const [logs, setLogs] = useState<LogEntry[]>([]);
-  const [sortColumn, setSortColumn] = useState<'name' | 'quantity' | 'status' | 'lastUpdated' | null>(null);
+  const [sortColumn, setSortColumn] = useState<'name' | 'quantity' | 'status' | 'lastUpdated' | 'robotName' | null>(null);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [expandedDates, setExpandedDates] = useState<string[]>([]);
+  const [lastRefresh, setLastRefresh] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<string>('all');
 
   const refreshInventory = () => {
     fetch('http://localhost:5001/api/items')
       .then(res => res.json())
-      .then(data => setInventoryItems(data))
+      .then(data => {
+        setInventoryItems(data);
+        setLastRefresh(new Date().toLocaleString());
+      })
       .catch(err => console.error('Error refreshing inventory items:', err));
   };
 
@@ -43,7 +48,7 @@ const InventoryPage: React.FC = () => {
     refreshLogs();
   }, []);
 
-  const handleSort = (column: 'name' | 'quantity' | 'status' | 'lastUpdated') => {
+  const handleSort = (column: 'name' | 'quantity' | 'status' | 'lastUpdated' | 'robotName') => {
     if (sortColumn === column) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     } else {
@@ -57,13 +62,14 @@ const InventoryPage: React.FC = () => {
     return sortDirection === 'asc' ? ' ▲' : ' ▼';
   };
 
-  const filteredItems = inventoryItems.filter(item =>
-    item.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredItems = inventoryItems.filter(item => {
+    const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) || item.lastUpdated.split('T')[0].includes(searchTerm);
+    const matchesStatus = statusFilter === 'all' || item.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
 
   const sortedItems = [...filteredItems].sort((a, b) => {
     if (!sortColumn) return 0;
-
     const valA = a[sortColumn];
     const valB = b[sortColumn];
 
@@ -92,6 +98,9 @@ const InventoryPage: React.FC = () => {
       prev.includes(date) ? prev.filter(d => d !== date) : [...prev, date]
     );
   };
+
+  const expandAll = () => setExpandedDates(Object.keys(groupedByDate));
+  const collapseAll = () => setExpandedDates([]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -139,17 +148,38 @@ const InventoryPage: React.FC = () => {
             <div className="flex flex-col md:flex-row gap-4 items-center">
               <input
                 type="text"
-                placeholder="Search items..."
+                placeholder="Search items or dates..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full md:w-64 bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm"
               />
-              <button
-                onClick={refreshInventory}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded"
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="bg-gray-700 text-white border border-gray-600 rounded px-3 py-2 text-sm"
               >
-                Refresh Inventory
-              </button>
+                <option value="all">All Statuses</option>
+                <option value="available">Available</option>
+                <option value="low">Low</option>
+                <option value="depleted">Depleted</option>
+              </select>
+              <div className="flex flex-col items-center gap-1">
+                <button
+                  onClick={refreshInventory}
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded"
+                >
+                  Refresh Inventory
+                </button>
+                {lastRefresh && (
+                  <span className="text-xs text-gray-400">
+                    Last refresh: {lastRefresh}
+                  </span>
+                )}
+              </div>
+              <div className="flex gap-2">
+                <button onClick={expandAll} className="text-sm text-white-400 hover:underline">Expand All</button>
+                <button onClick={collapseAll} className="text-sm text-white-400 hover:underline">Collapse All</button>
+              </div>
             </div>
           </div>
 
@@ -169,8 +199,8 @@ const InventoryPage: React.FC = () => {
                   <th onClick={() => handleSort('lastUpdated')} className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider cursor-pointer">
                     Last Updated{getSortArrow('lastUpdated')}
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                    Robot Name
+                  <th onClick={() => handleSort('robotName')} className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider cursor-pointer">
+                    Robot Name{getSortArrow('robotName')}
                   </th>
                 </tr>
               </thead>
@@ -227,8 +257,6 @@ const InventoryPage: React.FC = () => {
               </div>
             </div>
           </div>
-
-       
 
           <div className="bg-gray-800/50 p-4 rounded-lg border border-gray-700">
             <h3 className="text-lg font-medium mb-2">Recent Updates</h3>

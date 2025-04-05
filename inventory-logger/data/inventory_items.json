@@ -1,83 +1,402 @@
 [
     {
       "id": 1,
-      "name": "Navigation Sensor",
-      "quantity": 15,
+      "name": "Cooling Fan",
+      "quantity": 13,
       "status": "available",
-      "lastUpdated": "2025-04-06T14:30:00",
-      "robotName": "SentryBot"
-    },
-    {
-      "id": 2,
-      "name": "Thermal Camera",
-      "quantity": 4,
-      "status": "low",
-      "lastUpdated": "2025-04-06T09:15:00",
-      "robotName": "RoboHawk"
-    },
-    {
-      "id": 3,
-      "name": "Gyroscope Module",
-      "quantity": 0,
-      "status": "depleted",
-      "lastUpdated": "2025-04-05T18:50:00",
-      "robotName": "Atlas"
-    },
-    {
-      "id": 4,
-      "name": "Wheel Motor",
-      "quantity": 32,
-      "status": "available",
-      "lastUpdated": "2025-04-06T11:40:00",
+      "lastUpdated": "2025-04-08T11:36:00",
       "robotName": "BoltUnit"
     },
     {
-      "id": 5,
-      "name": "Battery Pack",
-      "quantity": 7,
-      "status": "low",
-      "lastUpdated": "2025-04-06T13:05:00",
+      "id": 2,
+      "name": "Navigation Sensor",
+      "quantity": 14,
+      "status": "available",
+      "lastUpdated": "2025-04-09T20:39:00",
       "robotName": "CoreX"
     },
     {
-      "id": 6,
-      "name": "Lidar Scanner",
-      "quantity": 10,
+      "id": 3,
+      "name": "Display Unit",
+      "quantity": 21,
       "status": "available",
-      "lastUpdated": "2025-04-05T16:20:00",
-      "robotName": "ScanBot"
+      "lastUpdated": "2025-04-13T00:36:00",
+      "robotName": "RoboHawk"
+    },
+    {
+      "id": 4,
+      "name": "Display Unit",
+      "quantity": 4,
+      "status": "low",
+      "lastUpdated": "2025-04-12T20:09:00",
+      "robotName": "CogBot"
+    },
+    {
+      "id": 5,
+      "name": "Hydraulic Pump",
+      "quantity": 9,
+      "status": "low",
+      "lastUpdated": "2025-04-09T22:42:00",
+      "robotName": "CogBot"
+    },
+    {
+      "id": 6,
+      "name": "Main Processor",
+      "quantity": 28,
+      "status": "available",
+      "lastUpdated": "2025-04-08T17:04:00",
+      "robotName": "RoboHawk"
     },
     {
       "id": 7,
-      "name": "Arm Servo",
-      "quantity": 0,
-      "status": "depleted",
-      "lastUpdated": "2025-04-06T10:25:00",
-      "robotName": "Mechanix"
+      "name": "Signal Booster",
+      "quantity": 15,
+      "status": "available",
+      "lastUpdated": "2025-04-06T15:20:00",
+      "robotName": "CogBot"
     },
     {
       "id": 8,
-      "name": "Infrared Sensor",
-      "quantity": 25,
+      "name": "Radar Array",
+      "quantity": 29,
       "status": "available",
-      "lastUpdated": "2025-04-06T17:10:00",
-      "robotName": "RavenEye"
+      "lastUpdated": "2025-04-06T21:57:00",
+      "robotName": "ScanBot"
     },
     {
       "id": 9,
-      "name": "Cooling Fan",
-      "quantity": 3,
-      "status": "low",
-      "lastUpdated": "2025-04-06T08:45:00",
-      "robotName": "NanoDrone"
+      "name": "Radar Array",
+      "quantity": 28,
+      "status": "available",
+      "lastUpdated": "2025-04-11T19:11:00",
+      "robotName": "CoreX"
     },
     {
       "id": 10,
-      "name": "Main Processor",
+      "name": "Servo Motor",
+      "quantity": 18,
+      "status": "available",
+      "lastUpdated": "2025-04-09T01:25:00",
+      "robotName": "Atlas"
+    },
+    {
+      "id": 11,
+      "name": "Infrared Sensor",
+      "quantity": 29,
+      "status": "available",
+      "lastUpdated": "2025-04-10T05:32:00",
+      "robotName": "CoreX"
+    },
+    {
+      "id": 12,
+      "name": "Gyroscope Module",
+      "quantity": 19,
+      "status": "available",
+      "lastUpdated": "2025-04-08T18:10:00",
+      "robotName": "RavenEye"
+    },
+    {
+      "id": 13,
+      "name": "Infrared Sensor",
+      "quantity": 16,
+      "status": "available",
+      "lastUpdated": "2025-04-09T10:07:00",
+      "robotName": "Atlas"
+    },
+    {
+      "id": 14,
+      "name": "Antenna Module",
+      "quantity": 2,
+      "status": "low",
+      "lastUpdated": "2025-04-07T03:08:00",
+      "robotName": "RoboHawk"
+    },
+    {
+      "id": 15,
+      "name": "Servo Motor",
+      "quantity": 6,
+      "status": "low",
+      "lastUpdated": "2025-04-11T21:49:00",
+      "robotName": "RavenEye"
+    },
+    {
+      "id": 16,
+      "name": "Hydraulic Pump",
+      "quantity": 13,
+      "status": "available",
+      "lastUpdated": "2025-04-07T07:30:00",
+      "robotName": "ScanBot"
+    },
+    {
+      "id": 17,
+      "name": "Battery Pack",
+      "quantity": 0,
+      "status": "depleted",
+      "lastUpdated": "2025-04-10T19:31:00",
+      "robotName": "CogBot"
+    },
+    {
+      "id": 18,
+      "name": "Hydraulic Pump",
+      "quantity": 20,
+      "status": "available",
+      "lastUpdated": "2025-04-08T15:38:00",
+      "robotName": "ScanBot"
+    },
+    {
+      "id": 19,
+      "name": "Gyroscope Module",
+      "quantity": 9,
+      "status": "low",
+      "lastUpdated": "2025-04-08T23:44:00",
+      "robotName": "CogBot"
+    },
+    {
+      "id": 20,
+      "name": "Radar Array",
       "quantity": 1,
       "status": "low",
-      "lastUpdated": "2025-04-05T22:30:00",
+      "lastUpdated": "2025-04-13T04:43:00",
+      "robotName": "CoreX"
+    },
+    {
+      "id": 21,
+      "name": "Thermal Camera",
+      "quantity": 19,
+      "status": "available",
+      "lastUpdated": "2025-04-11T03:48:00",
+      "robotName": "RavenEye"
+    },
+    {
+      "id": 22,
+      "name": "Navigation Sensor",
+      "quantity": 3,
+      "status": "low",
+      "lastUpdated": "2025-04-08T00:16:00",
+      "robotName": "Atlas"
+    },
+    {
+      "id": 23,
+      "name": "Circuit Board",
+      "quantity": 14,
+      "status": "available",
+      "lastUpdated": "2025-04-10T10:19:00",
+      "robotName": "Atlas"
+    },
+    {
+      "id": 24,
+      "name": "Radar Array",
+      "quantity": 18,
+      "status": "available",
+      "lastUpdated": "2025-04-07T09:03:00",
+      "robotName": "ScanBot"
+    },
+    {
+      "id": 25,
+      "name": "Logic Controller",
+      "quantity": 5,
+      "status": "low",
+      "lastUpdated": "2025-04-12T15:24:00",
+      "robotName": "RavenEye"
+    },
+    {
+      "id": 26,
+      "name": "Logic Controller",
+      "quantity": 2,
+      "status": "low",
+      "lastUpdated": "2025-04-09T20:08:00",
+      "robotName": "BoltUnit"
+    },
+    {
+      "id": 27,
+      "name": "Logic Controller",
+      "quantity": 30,
+      "status": "available",
+      "lastUpdated": "2025-04-09T05:49:00",
+      "robotName": "SentryBot"
+    },
+    {
+      "id": 28,
+      "name": "Thermal Camera",
+      "quantity": 7,
+      "status": "low",
+      "lastUpdated": "2025-04-11T03:47:00",
+      "robotName": "Mechanix"
+    },
+    {
+      "id": 29,
+      "name": "Lidar Scanner",
+      "quantity": 12,
+      "status": "available",
+      "lastUpdated": "2025-04-09T19:15:00",
+      "robotName": "Mechanix"
+    },
+    {
+      "id": 30,
+      "name": "Battery Pack",
+      "quantity": 16,
+      "status": "available",
+      "lastUpdated": "2025-04-08T07:12:00",
+      "robotName": "BoltUnit"
+    },
+    {
+      "id": 31,
+      "name": "Logic Controller",
+      "quantity": 24,
+      "status": "available",
+      "lastUpdated": "2025-04-06T23:45:00",
+      "robotName": "BoltUnit"
+    },
+    {
+      "id": 32,
+      "name": "Signal Booster",
+      "quantity": 14,
+      "status": "available",
+      "lastUpdated": "2025-04-11T16:44:00",
+      "robotName": "ScanBot"
+    },
+    {
+      "id": 33,
+      "name": "Battery Pack",
+      "quantity": 18,
+      "status": "available",
+      "lastUpdated": "2025-04-08T21:07:00",
+      "robotName": "NanoDrone"
+    },
+    {
+      "id": 34,
+      "name": "Heat Sink",
+      "quantity": 20,
+      "status": "available",
+      "lastUpdated": "2025-04-09T17:40:00",
       "robotName": "CogBot"
+    },
+    {
+      "id": 35,
+      "name": "Arm Servo",
+      "quantity": 14,
+      "status": "available",
+      "lastUpdated": "2025-04-10T04:11:00",
+      "robotName": "Atlas"
+    },
+    {
+      "id": 36,
+      "name": "Circuit Board",
+      "quantity": 9,
+      "status": "low",
+      "lastUpdated": "2025-04-11T15:54:00",
+      "robotName": "CogBot"
+    },
+    {
+      "id": 37,
+      "name": "Logic Controller",
+      "quantity": 4,
+      "status": "low",
+      "lastUpdated": "2025-04-11T06:41:00",
+      "robotName": "CoreX"
+    },
+    {
+      "id": 38,
+      "name": "Navigation Sensor",
+      "quantity": 18,
+      "status": "available",
+      "lastUpdated": "2025-04-07T09:14:00",
+      "robotName": "Mechanix"
+    },
+    {
+      "id": 39,
+      "name": "Radar Array",
+      "quantity": 13,
+      "status": "available",
+      "lastUpdated": "2025-04-13T02:01:00",
+      "robotName": "NanoDrone"
+    },
+    {
+      "id": 40,
+      "name": "Antenna Module",
+      "quantity": 16,
+      "status": "available",
+      "lastUpdated": "2025-04-13T06:03:00",
+      "robotName": "ScanBot"
+    },
+    {
+      "id": 41,
+      "name": "Signal Booster",
+      "quantity": 27,
+      "status": "available",
+      "lastUpdated": "2025-04-06T14:52:00",
+      "robotName": "RavenEye"
+    },
+    {
+      "id": 42,
+      "name": "Servo Motor",
+      "quantity": 12,
+      "status": "available",
+      "lastUpdated": "2025-04-13T00:30:00",
+      "robotName": "Mechanix"
+    },
+    {
+      "id": 43,
+      "name": "Logic Controller",
+      "quantity": 24,
+      "status": "available",
+      "lastUpdated": "2025-04-06T12:18:00",
+      "robotName": "NanoDrone"
+    },
+    {
+      "id": 44,
+      "name": "Drive Shaft",
+      "quantity": 6,
+      "status": "low",
+      "lastUpdated": "2025-04-12T08:10:00",
+      "robotName": "NanoDrone"
+    },
+    {
+      "id": 45,
+      "name": "Logic Controller",
+      "quantity": 15,
+      "status": "available",
+      "lastUpdated": "2025-04-10T20:26:00",
+      "robotName": "BoltUnit"
+    },
+    {
+      "id": 46,
+      "name": "Battery Pack",
+      "quantity": 13,
+      "status": "available",
+      "lastUpdated": "2025-04-12T01:55:00",
+      "robotName": "CoreX"
+    },
+    {
+      "id": 47,
+      "name": "Signal Booster",
+      "quantity": 14,
+      "status": "available",
+      "lastUpdated": "2025-04-07T00:51:00",
+      "robotName": "CogBot"
+    },
+    {
+      "id": 48,
+      "name": "Lidar Scanner",
+      "quantity": 26,
+      "status": "available",
+      "lastUpdated": "2025-04-09T18:36:00",
+      "robotName": "NanoDrone"
+    },
+    {
+      "id": 49,
+      "name": "Infrared Sensor",
+      "quantity": 0,
+      "status": "depleted",
+      "lastUpdated": "2025-04-12T10:10:00",
+      "robotName": "BoltUnit"
+    },
+    {
+      "id": 50,
+      "name": "Infrared Sensor",
+      "quantity": 21,
+      "status": "available",
+      "lastUpdated": "2025-04-09T17:18:00",
+      "robotName": "Mechanix"
     }
   ]
-  
