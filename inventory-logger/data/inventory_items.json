@@ -1,10 +1,83 @@
 [
-  {
-    "id": 1,
-    "name": "Navigation Sensor",
-    "quantity": 15,
-    "status": "available",
-    "lastUpdated": "2025-04-06T14:30:00",
-    "robotName": "SentryBot"
-  }
-]
+    {
+      "id": 1,
+      "name": "Navigation Sensor",
+      "quantity": 15,
+      "status": "available",
+      "lastUpdated": "2025-04-06T14:30:00",
+      "robotName": "SentryBot"
+    },
+    {
+      "id": 2,
+      "name": "Thermal Camera",
+      "quantity": 4,
+      "status": "low",
+      "lastUpdated": "2025-04-06T09:15:00",
+      "robotName": "RoboHawk"
+    },
+    {
+      "id": 3,
+      "name": "Gyroscope Module",
+      "quantity": 0,
+      "status": "depleted",
+      "lastUpdated": "2025-04-05T18:50:00",
+      "robotName": "Atlas"
+    },
+    {
+      "id": 4,
+      "name": "Wheel Motor",
+      "quantity": 32,
+      "status": "available",
+      "lastUpdated": "2025-04-06T11:40:00",
+      "robotName": "BoltUnit"
+    },
+    {
+      "id": 5,
+      "name": "Battery Pack",
+      "quantity": 7,
+      "status": "low",
+      "lastUpdated": "2025-04-06T13:05:00",
+      "robotName": "CoreX"
+    },
+    {
+      "id": 6,
+      "name": "Lidar Scanner",
+      "quantity": 10,
+      "status": "available",
+      "lastUpdated": "2025-04-05T16:20:00",
+      "robotName": "ScanBot"
+    },
+    {
+      "id": 7,
+      "name": "Arm Servo",
+      "quantity": 0,
+      "status": "depleted",
+      "lastUpdated": "2025-04-06T10:25:00",
+      "robotName": "Mechanix"
+    },
+    {
+      "id": 8,
+      "name": "Infrared Sensor",
+      "quantity": 25,
+      "status": "available",
+      "lastUpdated": "2025-04-06T17:10:00",
+      "robotName": "RavenEye"
+    },
+    {
+      "id": 9,
+      "name": "Cooling Fan",
+      "quantity": 3,
+      "status": "low",
+      "lastUpdated": "2025-04-06T08:45:00",
+      "robotName": "NanoDrone"
+    },
+    {
+      "id": 10,
+      "name": "Main Processor",
+      "quantity": 1,
+      "status": "low",
+      "lastUpdated": "2025-04-05T22:30:00",
+      "robotName": "CogBot"
+    }
+  ]
+  
