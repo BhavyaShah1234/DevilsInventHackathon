@@ -15,8 +15,9 @@ const ControlPage: React.FC = () => {
   const [showLiveMap, setShowLiveMap] = useState(false);
   const [robotPosition, setRobotPosition] = useState({ x: 150, y: 200 });
   const [direction, setDirection] = useState<'right' | 'down'>('right');
+  const [isEmergencyStopped, setIsEmergencyStopped] = useState(false);
   const navigate = useNavigate();
-  
+
   const obstacles = [
     { x: 280, y: 250, width: 100, height: 90 },
     { x: 500, y: 150, width: 120, height: 100 },
@@ -56,7 +57,7 @@ const ControlPage: React.FC = () => {
       if (!willCollide(nextX, nextY)) {
         setRobotPosition({ x: nextX, y: nextY });
       } else {
-        console.log("\uD83D\uDEAB Obstacle hit!");
+        console.log("🚫 Obstacle hit!");
         setIsRunningInventory(false);
       }
     }, 300);
@@ -109,10 +110,10 @@ const ControlPage: React.FC = () => {
             </p>
             <button
               onClick={handleRunInventory}
-              disabled={isRunningInventory}
+              disabled={isRunningInventory || isEmergencyStopped}
               className={`w-full py-2 px-4 rounded flex items-center justify-center gap-2 ${
-                isRunningInventory 
-                  ? 'bg-gray-700 cursor-not-allowed' 
+                isRunningInventory || isEmergencyStopped
+                  ? 'bg-gray-700 cursor-not-allowed'
                   : 'bg-blue-600 hover:bg-blue-700'
               }`}
             >
@@ -138,8 +139,8 @@ const ControlPage: React.FC = () => {
                     className="w-full h-full object-cover"
                   />
                   <div className="fixed bottom-4 right-4 bg-gray-800/90 text-white text-sm px-3 py-1 rounded shadow-lg z-50">
-  🔋 Battery: {batteryLevel}%
-</div>
+                    🔋 Battery: {batteryLevel}%
+                  </div>
                   {obstacles.map((obs, i) => (
                     <div
                       key={i}
@@ -160,22 +161,48 @@ const ControlPage: React.FC = () => {
                       transform: 'translate(-50%, -50%)',
                     }}
                   />
-                  
                 </div>
                 <div className="mt-4 flex gap-4 justify-center">
-                  <button onClick={() => setIsRunningInventory(false)} className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">🛑 Emergency Stop</button>
-                  <button onClick={() => setIsRunningInventory(true)} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">▶️ Resume</button>
-                  <button onClick={() => setIsRunningInventory(false)} className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded">⏸ Pause</button>
-
+                  <button
+                    onClick={() => {
+                      setIsRunningInventory(false);
+                      setIsEmergencyStopped(true);
+                    }}
+                    className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
+                  >
+                    🛑 Emergency Stop
+                  </button>
+                  <button
+                    onClick={() => setIsRunningInventory(true)}
+                    disabled={isEmergencyStopped}
+                    className={`px-4 py-2 rounded ${
+                      isEmergencyStopped
+                        ? 'bg-gray-600 cursor-not-allowed'
+                        : 'bg-blue-600 hover:bg-blue-700'
+                    } text-white`}
+                  >
+                    ▶️ Resume
+                  </button>
+                  <button
+                    onClick={() => setIsRunningInventory(false)}
+                    className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded"
+                  >
+                    ⏸ Pause
+                  </button>
                 </div>
+                {isEmergencyStopped && (
+                  <div className="mt-4 text-center text-red-400 text-sm font-medium">
+                    ⚠️ Emergency Stop activated. You have stopped the robot. Please restart the system to resume operations.
+                  </div>
+                )}
                 <div className="mt-6 flex justify-center">
-  <button
-    onClick={() => navigate('/inventory')}
-    className="bg-yellow-600 hover:bg-yellow-700 text-white px-5 py-2 rounded shadow"
-  >
-    🔍 View Inspection
-  </button>
-</div>
+                  <button
+                    onClick={() => navigate('/inventory')}
+                    className="bg-yellow-600 hover:bg-yellow-700 text-white px-5 py-2 rounded shadow"
+                  >
+                    🔍 View Inspection
+                  </button>
+                </div>
               </div>
             )}
           </div>
