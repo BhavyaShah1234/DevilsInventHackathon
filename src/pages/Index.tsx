@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Box, Home, Sliders, User } from 'lucide-react';
-import Navbar from '@/components/Navbar';
+import { Box, Home, Sliders, User, Bell } from 'lucide-react';
 
 const Index: React.FC = () => {
   const [showLogin, setShowLogin] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
 
   const toggleLogin = () => setShowLogin(!showLogin);
+  const toggleNotifications = () => setShowNotifications(!showNotifications);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-gray-950 text-white p-4 md:p-8 relative">
@@ -26,9 +27,7 @@ const Index: React.FC = () => {
               className="w-full mb-4 px-3 py-2 rounded bg-gray-700 text-white border border-gray-600 focus:outline-none"
             />
             <div className="flex justify-between">
-              <button
-                className="bg-blue-600 hover:bg-blue-700 text-white py-1 px-4 rounded"
-              >
+              <button className="bg-blue-600 hover:bg-blue-700 text-white py-1 px-4 rounded">
                 Login
               </button>
               <button
@@ -42,18 +41,38 @@ const Index: React.FC = () => {
         </div>
       )}
 
+      {/* Notifications Popup */}
+      {showNotifications && (
+        <div className="absolute top-20 right-6 z-50 bg-gray-800 border border-gray-700 rounded-lg p-4 w-72 shadow-xl">
+          <h2 className="text-md font-semibold text-white mb-2">Notifications</h2>
+          <ul className="text-sm text-gray-300 space-y-1">
+            <li>🔧 Maintenance check due next week</li>
+            <li>⚠️ Battery Pack running low</li>
+            <li>✅ System firmware updated</li>
+          </ul>
+        </div>
+      )}
+
       {/* Header */}
       <header className="mb-8 flex justify-between items-center">
         <div>
           <h1 className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">Robot Information</h1>
           <p className="text-gray-400 mt-2">System status and specifications</p>
         </div>
-        <button
-          onClick={toggleLogin}
-          className="flex items-center gap-2 px-3 py-2 bg-gray-800 border border-gray-700 rounded hover:bg-gray-700"
-        >
-          <User size={16} /> <span className="text-sm">Sign In</span>
-        </button>
+        <div className="flex gap-3">
+          <button
+            onClick={toggleNotifications}
+            className="flex items-center gap-2 px-3 py-2 bg-gray-800 border border-gray-700 rounded hover:bg-gray-700"
+          >
+            <Bell size={16} />
+          </button>
+          <button
+            onClick={toggleLogin}
+            className="flex items-center gap-2 px-3 py-2 bg-gray-800 border border-gray-700 rounded hover:bg-gray-700"
+          >
+            <User size={16} /> <span className="text-sm">Sign In</span>
+          </button>
+        </div>
       </header>
 
       {/* Navigation */}
