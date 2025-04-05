@@ -58,7 +58,7 @@ const Navbar: React.FC = () => {
       <nav className="mb-8 bg-black/30 backdrop-blur-lg rounded-lg border overflow-hidden">
         <ul className="flex flex-wrap">
           <li className="flex-1">
-            <Link to="/" className={getNavClass('/')}>
+            <Link to="/" className={getNavClass('/')}> 
               <Home size={18} />
               <span className="hidden sm:inline">Information</span>
             </Link>
@@ -73,6 +73,14 @@ const Navbar: React.FC = () => {
             <Link to="/control" className={getNavClass('/control')}>
               <Sliders size={18} />
               <span className="hidden sm:inline">Control</span>
+            </Link>
+          </li>
+          <li className="flex-1">
+            <Link to="/inspections" className={getNavClass('/inspections')}>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01" />
+              </svg>
+              <span className="hidden sm:inline">Inspections</span>
             </Link>
           </li>
         </ul>
