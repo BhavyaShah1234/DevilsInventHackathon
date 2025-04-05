@@ -67,7 +67,7 @@ const ControlPage: React.FC = () => {
   return (
     <div className="min-h-screen p-4 md:p-8">
       <Navbar />
-      <RobotDashboardLayout title="" subtitle="" currentPage="control">
+      <RobotDashboardLayout title="Robot Control Center" subtitle="Manage operations and system functions" currentPage="control">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-6">
             <div className="bg-gray-800/50 p-4 rounded-lg border border-gray-700">
