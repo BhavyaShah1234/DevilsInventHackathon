@@ -7,15 +7,27 @@ import inventoryRoutes from './routes/inventory';
 import qualityRoutes from './routes/quality';
 import pathsRoutes from './routes/paths';
 import { SchedulerService } from './services/scheduler';
+import { notificationsRouter } from './routes/notifications';
 
 const app = express();
-const port = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3001;
 
 // Initialize database
-const db = new Database(path.join(__dirname, '../database.sqlite'));
+const db = new Database(path.join(__dirname, '../database.sqlite'), (err) => {
+  if (err) {
+    console.error('Database initialization error:', err);
+    process.exit(1);
+  }
+  console.log('Database connected successfully');
+});
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: ['http://localhost:8082', 'http://localhost:8083', 'http://localhost:3001'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 app.use(express.json());
 
 // Add db to request object
@@ -42,16 +54,17 @@ app.use('/api/auth', authRoutes);
 app.use('/api/inventory', inventoryRoutes);
 app.use('/api/quality', qualityRoutes);
 app.use('/api/paths', pathsRoutes);
+app.use('/api/notifications', notificationsRouter);
 
 // Error handling middleware
-app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error(err.stack);
   res.status(500).json({ error: 'Something went wrong!' });
 });
 
 // Start server
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
   
   // Start the scheduler
   SchedulerService.start();

@@ -23,6 +23,26 @@ interface User {
   role: string;
 }
 
+// Validate token
+router.post('/validate', async (req: CustomRequest, res) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    return res.status(401).json({ message: 'No token provided' });
+  }
+
+  const token = authHeader.split(' ')[1];
+  if (!token) {
+    return res.status(401).json({ message: 'Invalid token format' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    res.json({ valid: true, user: decoded });
+  } catch (err) {
+    res.status(401).json({ message: 'Invalid token' });
+  }
+});
+
 // Register a new user
 router.post('/register', async (req: CustomRequest, res) => {
   const { email, password } = req.body;
@@ -74,7 +94,7 @@ router.post('/register', async (req: CustomRequest, res) => {
 
 // Login user
 router.post('/login', async (req: CustomRequest, res) => {
-  const { email, password } = req.body;
+  const { email, password, role } = req.body;
 
   if (!email || !password) {
     return res.status(400).json({ message: 'Email and password are required' });
@@ -82,7 +102,7 @@ router.post('/login', async (req: CustomRequest, res) => {
 
   try {
     // Check for admin credentials first
-    if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+    if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD && role === 'admin') {
       const token = jwt.sign(
         { id: 'admin', email: ADMIN_EMAIL, role: ADMIN_ROLE },
         JWT_SECRET,

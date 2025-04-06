@@ -96,7 +96,7 @@ const LoginPage = () => {
                   onClick={() => navigate('/register')}
                   disabled={isLoading}
                 >
-                  Create one
+                  Register
                 </Button>
               </div>
             </form>

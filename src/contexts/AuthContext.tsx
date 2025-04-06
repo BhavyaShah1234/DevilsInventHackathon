@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { api } from '../services/api';
 
 interface User {
   id: string;
@@ -39,8 +40,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const navigate = useNavigate();
   const location = useLocation();
 
-  const validateToken = (token: string, expiry: number): boolean => {
-    return token && expiry > Date.now();
+  const validateToken = async (token: string): Promise<boolean> => {
+    try {
+      return await api.auth.validateToken(token);
+    } catch (error) {
+      console.error('Token validation failed:', error);
+      return false;
+    }
   };
 
   const clearAuthData = () => {
@@ -57,7 +63,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         if (storedToken && storedUser) {
           const userData = JSON.parse(storedUser);
-          if (validateToken(storedToken, userData.tokenExpiry)) {
+          const isValid = await validateToken(storedToken);
+          
+          if (isValid) {
             setUser(userData);
             if (location.pathname === '/login' || location.pathname === '/register') {
               navigate('/');
@@ -88,35 +96,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       setIsLoading(true);
       setError(null);
-
-      const response = await fetch('http://localhost:3001/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password, role }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Invalid credentials');
-      }
-
-      const data = await response.json();
-      const userData: User = {
-        id: data.user.id,
-        email: data.user.email,
-        role: data.user.role,
-        token: data.token,
-        tokenExpiry: Date.now() + 24 * 60 * 60 * 1000, // 24 hours
+      
+      const { token, user: userData } = await api.auth.login(email, password, role);
+      
+      // Calculate token expiry (24 hours from now)
+      const tokenExpiry = Date.now() + 24 * 60 * 60 * 1000;
+      
+      const user: User = {
+        ...userData,
+        token,
+        tokenExpiry
       };
-
-      localStorage.setItem(TOKEN_KEY, data.token);
-      localStorage.setItem(USER_KEY, JSON.stringify(userData));
-      setUser(userData);
-      navigate('/');
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred during login');
-      throw err;
+      
+      localStorage.setItem(TOKEN_KEY, token);
+      localStorage.setItem(USER_KEY, JSON.stringify(user));
+      setUser(user);
+      
+      if (location.pathname === '/login' || location.pathname === '/register') {
+        navigate('/');
+      }
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Login failed');
+      throw error;
     } finally {
       setIsLoading(false);
     }
@@ -126,48 +127,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       setIsLoading(true);
       setError(null);
-
-      const response = await fetch('http://localhost:3001/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      let data;
-      try {
-        data = await response.json();
-      } catch (err) {
-        console.error('JSON parse error:', err);
-        throw new Error('Invalid response from server');
-      }
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Registration failed');
-      }
-
-      const { token, user } = data;
-
-      if (!token || !user) {
-        throw new Error('Invalid response format');
-      }
-
+      
+      const { token, user: userData } = await api.auth.register(email, password);
+      
+      // Calculate token expiry (24 hours from now)
+      const tokenExpiry = Date.now() + 24 * 60 * 60 * 1000;
+      
+      const user: User = {
+        ...userData,
+        token,
+        tokenExpiry
+      };
+      
       localStorage.setItem(TOKEN_KEY, token);
-      localStorage.setItem(USER_KEY, JSON.stringify({
-        ...user,
-        token,
-        tokenExpiry: Date.now() + 24 * 60 * 60 * 1000, // 24 hours
-      }));
-
-      setUser({
-        ...user,
-        token,
-        tokenExpiry: Date.now() + 24 * 60 * 60 * 1000,
-      });
-    } catch (err: any) {
-      setError(err.message || 'Registration failed');
-      throw err;
+      localStorage.setItem(USER_KEY, JSON.stringify(user));
+      setUser(user);
+      
+      navigate('/');
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Registration failed');
+      throw error;
     } finally {
       setIsLoading(false);
     }

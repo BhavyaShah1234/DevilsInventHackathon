@@ -6,14 +6,7 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Card } from "./ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
-
-interface Notification {
-  id: string;
-  message: string;
-  time: string;
-  date: string;
-  archived: boolean;
-}
+import { useNotifications } from '../hooks/useNotifications';
 
 interface LoginForm {
   email: string;
@@ -33,10 +26,11 @@ const Navbar: React.FC = () => {
   const [showLogin, setShowLogin] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-  const [darkMode, setDarkMode] = useState(() => localStorage.getItem('darkMode') === 'true');
+  const [darkMode, setDarkMode] = useState(() => {
+    const stored = localStorage.getItem('darkMode');
+    return stored ? stored === 'true' : false;
+  });
   const [viewArchived, setViewArchived] = useState(false);
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [loginForm, setLoginForm] = useState<LoginForm>({
     email: "",
     password: "",
@@ -46,39 +40,24 @@ const Navbar: React.FC = () => {
     password: "",
     confirmPassword: "",
   });
-  const [error, setError] = useState('');
 
-  useEffect(() => {
-    // Fetch notifications from API
-    const fetchNotifications = async () => {
-      try {
-        setIsLoading(true);
-        // TODO: Replace with actual API call
-        const response = await fetch('/api/notifications');
-        const data = await response.json();
-        setNotifications(data);
-      } catch (error) {
-        console.error('Failed to fetch notifications:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchNotifications();
-  }, []);
+  const {
+    notifications,
+    isLoading,
+    error,
+    fetchNotifications,
+    archiveNotification,
+    restoreNotification
+  } = useNotifications();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      setIsLoading(true);
-      await login(loginForm.email, loginForm.password);
+      await login(loginForm.email, loginForm.password, 'user');
       setShowLogin(false);
       setLoginForm({ email: '', password: '' });
     } catch (error) {
       console.error('Login error:', error);
-      setError('Invalid username or password');
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -99,14 +78,11 @@ const Navbar: React.FC = () => {
     }
 
     try {
-      setIsLoading(true);
       await register(registerForm.email, registerForm.password);
       navigate("/");
     } catch (error) {
       console.error("Registration error:", error);
       alert("Failed to register");
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -122,35 +98,13 @@ const Navbar: React.FC = () => {
     const newValue = !darkMode;
     setDarkMode(newValue);
     localStorage.setItem('darkMode', newValue.toString());
-  };
-
-  const archiveNotification = async (id: string) => {
-    try {
-      // TODO: Replace with actual API call
-      await fetch(`/api/notifications/${id}/archive`, { method: 'POST' });
-      setNotifications(prev => prev.map(n => 
-        n.id === id ? { ...n, archived: true } : n
-      ));
-    } catch (error) {
-      console.error('Failed to archive notification:', error);
-    }
-  };
-
-  const restoreNotification = async (id: string) => {
-    try {
-      // TODO: Replace with actual API call
-      await fetch(`/api/notifications/${id}/restore`, { method: 'POST' });
-      setNotifications(prev => prev.map(n => 
-        n.id === id ? { ...n, archived: false } : n
-      ));
-    } catch (error) {
-      console.error('Failed to restore notification:', error);
-    }
+    document.documentElement.classList.toggle('dark', newValue);
   };
 
   useEffect(() => {
-    document.body.classList.toggle('dark', darkMode);
-  }, [darkMode]);
+    // Apply initial dark mode class
+    document.documentElement.classList.toggle('dark', darkMode);
+  }, []);
 
   const getNavClass = (path: string) => {
     const isActive = location.pathname === path;
