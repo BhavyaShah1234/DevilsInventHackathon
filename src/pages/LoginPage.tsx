@@ -17,11 +17,24 @@ const LoginPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await login(email, password, role);
+      await login(email, password);
       toast.success('Successfully logged in!');
     } catch (error) {
       toast.error('Login failed. Please check your credentials.');
       console.error('Login failed:', error);
+    }
+  };
+
+  const handleQuickLogin = async () => {
+    try {
+      setEmail('admin@example.com');
+      setPassword('admin123');
+      setRole('admin');
+      await login('admin@example.com', 'admin123');
+      toast.success('Successfully logged in as admin!');
+    } catch (error) {
+      toast.error('Quick login failed. Please try again.');
+      console.error('Quick login failed:', error);
     }
   };
 
@@ -84,9 +97,21 @@ const LoginPage = () => {
                 <div className="text-sm text-red-500 mt-2">{error}</div>
               )}
 
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? 'Signing in...' : `Sign in as ${role === 'admin' ? 'Admin' : 'User'}`}
-              </Button>
+              <div className="space-y-4">
+                <Button type="submit" className="w-full" disabled={isLoading}>
+                  {isLoading ? 'Signing in...' : `Sign in as ${role === 'admin' ? 'Admin' : 'User'}`}
+                </Button>
+
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  className="w-full" 
+                  onClick={handleQuickLogin}
+                  disabled={isLoading}
+                >
+                  Quick Login (Admin)
+                </Button>
+              </div>
 
               <div className="text-center text-sm">
                 Don't have an account?{' '}

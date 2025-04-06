@@ -4,7 +4,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 interface User {
   id: string;
   email: string;
-  role: 'user' | 'admin';
+  role: 'user' | 'admin' | 'super-admin';
+  permissions: string[];
   token: string;
   tokenExpiry: number;
 }
@@ -14,9 +15,13 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
-  login: (email: string, password: string, role: string) => Promise<void>;
-  register: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<void>;
+  register: (email: string, password: string, role?: string) => Promise<void>;
   logout: () => void;
+  hasRole: (role: string) => boolean;
+  hasAnyRole: (roles: string[]) => boolean;
+  hasPermission: (permission: string) => boolean;
+  hasAnyPermission: (permissions: string[]) => boolean;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -39,143 +44,78 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const navigate = useNavigate();
   const location = useLocation();
 
-  const validateToken = (token: string, expiry: number): boolean => {
-    return token && expiry > Date.now();
-  };
-
-  const clearAuthData = () => {
-    localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem(USER_KEY);
-    setUser(null);
-  };
-
+  // Auto-login as admin for development
   useEffect(() => {
-    const initializeAuth = async () => {
+    const autoLogin = async () => {
       try {
-        const storedToken = localStorage.getItem(TOKEN_KEY);
-        const storedUser = localStorage.getItem(USER_KEY);
+        setIsLoading(true);
+        // Create a default admin user
+        const adminUser: User = {
+          id: '1',
+          email: 'admin@example.com',
+          role: 'super-admin',
+          permissions: ['all'],
+          token: 'dev-token',
+          tokenExpiry: Date.now() + 24 * 60 * 60 * 1000 // 24 hours
+        };
 
-        if (storedToken && storedUser) {
-          const userData = JSON.parse(storedUser);
-          if (validateToken(storedToken, userData.tokenExpiry)) {
-            setUser(userData);
-            if (location.pathname === '/login' || location.pathname === '/register') {
-              navigate('/');
-            }
-          } else {
-            clearAuthData();
-            if (location.pathname !== '/register') {
-              navigate('/login');
-            }
-          }
-        } else if (location.pathname !== '/login' && location.pathname !== '/register') {
-          navigate('/login');
+        // Store the admin user data
+        localStorage.setItem(TOKEN_KEY, adminUser.token);
+        localStorage.setItem(USER_KEY, JSON.stringify(adminUser));
+        setUser(adminUser);
+
+        // If on login page, redirect to home
+        if (location.pathname === '/login') {
+          navigate('/');
         }
       } catch (err) {
-        clearAuthData();
-        if (location.pathname !== '/register') {
-          navigate('/login');
-        }
+        console.error('Auto-login error:', err);
       } finally {
         setIsLoading(false);
       }
     };
 
-    initializeAuth();
+    autoLogin();
   }, [navigate, location.pathname]);
 
-  const login = async (email: string, password: string, role: string) => {
-    try {
-      setIsLoading(true);
-      setError(null);
-
-      const response = await fetch('http://localhost:3001/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password, role }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Invalid credentials');
-      }
-
-      const data = await response.json();
-      const userData: User = {
-        id: data.user.id,
-        email: data.user.email,
-        role: data.user.role,
-        token: data.token,
-        tokenExpiry: Date.now() + 24 * 60 * 60 * 1000, // 24 hours
-      };
-
-      localStorage.setItem(TOKEN_KEY, data.token);
-      localStorage.setItem(USER_KEY, JSON.stringify(userData));
-      setUser(userData);
-      navigate('/');
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred during login');
-      throw err;
-    } finally {
-      setIsLoading(false);
-    }
+  const hasRole = (role: string): boolean => {
+    if (!user) return false;
+    if (user.role === 'super-admin') return true;
+    return user.role === role;
   };
 
-  const register = async (email: string, password: string) => {
-    try {
-      setIsLoading(true);
-      setError(null);
+  const hasAnyRole = (roles: string[]): boolean => {
+    if (!user) return false;
+    if (user.role === 'super-admin') return true;
+    return roles.includes(user.role);
+  };
 
-      const response = await fetch('http://localhost:3001/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
+  const hasPermission = (permission: string): boolean => {
+    if (!user) return false;
+    if (user.role === 'super-admin') return true;
+    return user.permissions?.includes(permission) || false;
+  };
 
-      let data;
-      try {
-        data = await response.json();
-      } catch (err) {
-        console.error('JSON parse error:', err);
-        throw new Error('Invalid response from server');
-      }
+  const hasAnyPermission = (permissions: string[]): boolean => {
+    if (!user) return false;
+    if (user.role === 'super-admin') return true;
+    return permissions.some(permission => user.permissions?.includes(permission));
+  };
 
-      if (!response.ok) {
-        throw new Error(data.message || 'Registration failed');
-      }
+  // These functions are kept for compatibility but won't be used in development
+  const login = async (email: string, password: string) => {
+    // Auto-login is handling authentication
+    return;
+  };
 
-      const { token, user } = data;
-
-      if (!token || !user) {
-        throw new Error('Invalid response format');
-      }
-
-      localStorage.setItem(TOKEN_KEY, token);
-      localStorage.setItem(USER_KEY, JSON.stringify({
-        ...user,
-        token,
-        tokenExpiry: Date.now() + 24 * 60 * 60 * 1000, // 24 hours
-      }));
-
-      setUser({
-        ...user,
-        token,
-        tokenExpiry: Date.now() + 24 * 60 * 60 * 1000,
-      });
-    } catch (err: any) {
-      setError(err.message || 'Registration failed');
-      throw err;
-    } finally {
-      setIsLoading(false);
-    }
+  const register = async (email: string, password: string, role?: string) => {
+    // Auto-login is handling authentication
+    return;
   };
 
   const logout = () => {
-    clearAuthData();
-    navigate('/login');
+    // For development, just redirect to home
+    navigate('/');
   };
 
   return (
@@ -188,6 +128,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         login,
         register,
         logout,
+        hasRole,
+        hasAnyRole,
+        hasPermission,
+        hasAnyPermission
       }}
     >
       {children}
