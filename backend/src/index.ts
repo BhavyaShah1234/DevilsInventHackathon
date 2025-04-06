@@ -6,6 +6,7 @@ import authRoutes from './routes/auth';
 import inventoryRoutes from './routes/inventory';
 import qualityRoutes from './routes/quality';
 import pathsRoutes from './routes/paths';
+import usersRoutes from './routes/users';
 import { SchedulerService } from './services/scheduler';
 import { notificationsRouter } from './routes/notifications';
 
@@ -23,7 +24,7 @@ const db = new Database(path.join(__dirname, '../database.sqlite'), (err) => {
 
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:8082', 'http://localhost:8083', 'http://localhost:3001'],
+  origin: ['http://localhost:8082', 'http://localhost:8083', 'http://localhost:8084', 'http://localhost:8085', 'http://localhost:3001'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
@@ -39,6 +40,7 @@ declare global {
         id: number;
         email: string;
         role: string;
+        exp?: number;
       };
     }
   }
@@ -54,6 +56,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/inventory', inventoryRoutes);
 app.use('/api/quality', qualityRoutes);
 app.use('/api/paths', pathsRoutes);
+app.use('/api/users', usersRoutes);
 app.use('/api/notifications', notificationsRouter);
 
 // Error handling middleware

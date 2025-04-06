@@ -2,9 +2,13 @@ import express, { Request } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { Database, RunResult } from 'sqlite3';
+import { loginLimiter } from '../middleware/auth';
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+
+// Password complexity requirements
+const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
 // Hardcoded admin credentials
 const ADMIN_EMAIL = 'admin@devilsinvent.com';
@@ -51,6 +55,13 @@ router.post('/register', async (req: CustomRequest, res) => {
     return res.status(400).json({ message: 'Email and password are required' });
   }
 
+  // Validate password complexity
+  if (!PASSWORD_REGEX.test(password)) {
+    return res.status(400).json({
+      message: 'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character'
+    });
+  }
+
   try {
     // Hash password
     const salt = await bcrypt.genSalt(10);
@@ -93,7 +104,7 @@ router.post('/register', async (req: CustomRequest, res) => {
 });
 
 // Login user
-router.post('/login', async (req: CustomRequest, res) => {
+router.post('/login', loginLimiter, async (req: CustomRequest, res) => {
   const { email, password, role } = req.body;
 
   if (!email || !password) {

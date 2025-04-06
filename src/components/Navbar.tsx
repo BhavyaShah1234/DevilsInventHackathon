@@ -262,41 +262,6 @@ const Navbar: React.FC = () => {
         </div>
       )}
 
-      {showSettings && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="settings-title"
-        >
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-96 text-black dark:text-white">
-            <h2 id="settings-title" className="text-lg font-semibold mb-4">Settings</h2>
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span>👤 Account Settings</span>
-                <button className="px-3 py-1 rounded bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600">
-                  Edit
-                </button>
-              </div>
-              <div className="flex justify-between items-center">
-                <span>🔐 Staff Login Details</span>
-                <button className="px-3 py-1 rounded bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600">
-                  View
-                </button>
-              </div>
-              <div className="text-right">
-                <button
-                  onClick={toggleSettings}
-                  className="text-sm text-gray-500 dark:text-gray-400 hover:underline"
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Header */}
       <header className="mb-8 flex justify-between items-center">
         <div>
@@ -405,7 +370,9 @@ const Navbar: React.FC = () => {
             className="flex items-center gap-2 px-3 py-2 border rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-black dark:text-white"
             aria-label="Settings"
           >
-            <Settings size={16} />
+            <Link to="/settings" className="flex items-center gap-2">
+              <Settings size={16} />
+            </Link>
           </button>
         </div>
       </header>

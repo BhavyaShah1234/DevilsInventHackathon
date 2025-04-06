@@ -2,8 +2,18 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { Database } from 'sqlite3';
 import path from 'path';
+import rateLimit from 'express-rate-limit';
 
 const db = new Database(path.join(__dirname, '../../database.sqlite'));
+
+// Rate limiter for login attempts
+export const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // 5 attempts per windowMs
+  message: 'Too many login attempts, please try again later',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 // Extend Express Request type to include user
 declare global {
@@ -13,6 +23,7 @@ declare global {
         id: number;
         email: string;
         role: string;
+        exp?: number;
       };
     }
   }
@@ -31,7 +42,13 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
       id: number;
       email: string;
       role: string;
+      exp: number;
     };
+
+    // Check if token is expired
+    if (user.exp && user.exp < Math.floor(Date.now() / 1000)) {
+      return res.status(401).json({ error: 'Token expired' });
+    }
 
     // Verify user still exists in database
     db.get('SELECT id, email, role FROM users WHERE id = ?', [user.id], (err, row) => {

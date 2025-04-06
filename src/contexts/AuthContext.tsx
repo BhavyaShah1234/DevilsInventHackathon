@@ -15,23 +15,19 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
-  login: (email: string, password: string, role: string) => Promise<void>;
+  login: (email: string, password: string, role: string, rememberMe?: boolean) => Promise<void>;
   register: (email: string, password: string) => Promise<void>;
   logout: () => void;
 }
 
-const AuthContext = createContext<AuthContextType | null>(null);
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-};
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const TOKEN_KEY = 'auth_token';
 const USER_KEY = 'user_data';
+const REMEMBER_ME_KEY = 'remember_me';
+
+// Session timeout in milliseconds (24 hours)
+const SESSION_TIMEOUT = 24 * 60 * 60 * 1000;
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -52,7 +48,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const clearAuthData = () => {
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
+    localStorage.removeItem(REMEMBER_ME_KEY);
     setUser(null);
+  };
+
+  const checkSessionTimeout = (userData: User): boolean => {
+    if (!userData.tokenExpiry) return false;
+    return Date.now() < userData.tokenExpiry;
   };
 
   useEffect(() => {
@@ -60,12 +62,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         const storedToken = localStorage.getItem(TOKEN_KEY);
         const storedUser = localStorage.getItem(USER_KEY);
+        const rememberMe = localStorage.getItem(REMEMBER_ME_KEY) === 'true';
 
         if (storedToken && storedUser) {
           const userData = JSON.parse(storedUser);
           const isValid = await validateToken(storedToken);
+          const isSessionValid = rememberMe || checkSessionTimeout(userData);
           
-          if (isValid) {
+          if (isValid && isSessionValid) {
             setUser(userData);
             if (location.pathname === '/login' || location.pathname === '/register') {
               navigate('/');
@@ -92,15 +96,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     initializeAuth();
   }, [navigate, location.pathname]);
 
-  const login = async (email: string, password: string, role: string) => {
+  const login = async (email: string, password: string, role: string, rememberMe: boolean = false) => {
     try {
       setIsLoading(true);
       setError(null);
       
       const { token, user: userData } = await api.auth.login(email, password, role);
       
-      // Calculate token expiry (24 hours from now)
-      const tokenExpiry = Date.now() + 24 * 60 * 60 * 1000;
+      // Calculate token expiry based on remember me preference
+      const tokenExpiry = rememberMe ? Date.now() + SESSION_TIMEOUT : Date.now() + (12 * 60 * 60 * 1000); // 12 hours if not remembered
       
       const user: User = {
         ...userData,
@@ -110,6 +114,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       localStorage.setItem(TOKEN_KEY, token);
       localStorage.setItem(USER_KEY, JSON.stringify(user));
+      localStorage.setItem(REMEMBER_ME_KEY, rememberMe.toString());
       setUser(user);
       
       if (location.pathname === '/login' || location.pathname === '/register') {
@@ -130,8 +135,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       const { token, user: userData } = await api.auth.register(email, password);
       
-      // Calculate token expiry (24 hours from now)
-      const tokenExpiry = Date.now() + 24 * 60 * 60 * 1000;
+      const tokenExpiry = Date.now() + SESSION_TIMEOUT;
       
       const user: User = {
         ...userData,
@@ -172,4 +176,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       {children}
     </AuthContext.Provider>
   );
+};
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
 }; 
