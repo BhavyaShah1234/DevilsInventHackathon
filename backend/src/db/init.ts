@@ -1,20 +1,23 @@
 import { Database } from 'sqlite3';
-import fs from 'fs';
-import path from 'path';
+import { readFileSync } from 'fs';
+import { join } from 'path';
 
-const dbPath = path.join(__dirname, '../../database.sqlite');
-const schemaPath = path.join(__dirname, 'init.sql');
-
-// Create database connection
+const dbPath = join(__dirname, '../../database.sqlite');
 const db = new Database(dbPath);
 
-// Read and execute schema
-const schema = fs.readFileSync(schemaPath, 'utf8');
-db.exec(schema, (err) => {
-  if (err) {
-    console.error('Error initializing database:', err);
-    process.exit(1);
-  }
-  console.log('Database initialized successfully');
-  db.close();
-}); 
+const schema = readFileSync(join(__dirname, 'init.sql'), 'utf8');
+
+db.serialize(() => {
+  // Split schema into individual statements and execute them
+  schema.split(';').filter(stmt => stmt.trim()).forEach(stmt => {
+    db.run(stmt, (err) => {
+      if (err) {
+        console.error('Error executing schema:', err);
+        process.exit(1);
+      }
+    });
+  });
+  console.log('Database tables created successfully');
+});
+
+export default db; 
