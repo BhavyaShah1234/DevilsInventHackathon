@@ -122,11 +122,19 @@ const ControlPage: React.FC = () => {
             </div>
             <div className="w-full h-[500px] flex justify-center items-center overflow-hidden bg-gray-100 dark:bg-black rounded-lg">
               {isCameraOn && (
+<<<<<<< HEAD
                 <video src="/mapvideo.mp4" autoPlay loop muted controls className="rounded" style={{ width: '500px', transform: 'rotate(-90deg)', transformOrigin: 'center center' }} />
+=======
+                <video src="http://localhost:8000/live/stream.flv" autoPlay loop muted controls className="rounded" style={{ width: '500px', transform: 'rotate(-90deg)', transformOrigin: 'center center' }} />
+>>>>>>> 2bf6f10
               )}
             </div>
           </div>
         </div>
+<<<<<<< HEAD
+=======
+              
+>>>>>>> 2bf6f10
       </main>
     </div>
   );
