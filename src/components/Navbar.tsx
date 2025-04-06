@@ -90,7 +90,7 @@ const Navbar: React.FC = () => {
           <p className="text-gray-600 dark:text-gray-400 mt-1">{getPageSubtitle(location.pathname)}</p>
         </div>
         <div className="flex items-center gap-4">
-        <img src="/logo.png" alt="Logo" className="h-20 w-auto mr-400" />
+        <img src="/logo.png" alt="Logo" className="h-10 w-auto mr-5" />
 
           <div className="flex gap-3 items-center">
             <button onClick={toggleNotifications} className="flex items-center gap-2 px-3 py-2 border rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-black dark:text-white">
