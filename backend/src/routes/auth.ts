@@ -1,32 +1,58 @@
-import express from 'express';
+import express, { Request } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import db from '../db';
+import { Database, RunResult } from 'sqlite3';
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
+// Hardcoded admin credentials
+const ADMIN_EMAIL = 'admin@devilsinvent.com';
+const ADMIN_PASSWORD = 'admin123';
+const ADMIN_ROLE = 'admin';
+
+// Extend Express Request type to include db
+interface CustomRequest extends Request {
+  db: Database;
+}
+
+interface User {
+  id: number;
+  email: string;
+  password: string;
+  role: string;
+}
+
 // Register a new user
-router.post('/register', async (req, res) => {
-  const { username, password, role } = req.body;
+router.post('/register', async (req: CustomRequest, res) => {
+  const { email, password } = req.body;
 
-  // Hash password
-  const salt = await bcrypt.genSalt(10);
-  const hashedPassword = await bcrypt.hash(password, salt);
+  if (!email || !password) {
+    return res.status(400).json({ message: 'Email and password are required' });
+  }
 
-  db.run(
-    'INSERT INTO users (username, password, role) VALUES (?, ?, ?)',
-    [username, hashedPassword, role],
-    function(err) {
+  try {
+    // Hash password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Create user
+    const stmt = req.db.prepare(
+      'INSERT INTO users (email, password, role) VALUES (?, ?, ?)'
+    );
+
+    stmt.run(email, hashedPassword, 'user', function(this: RunResult, err: Error | null) {
       if (err) {
-        if (err.message.includes('UNIQUE constraint failed')) {
-          return res.status(400).json({ message: 'Username already exists' });
+        if (err.message?.includes('UNIQUE constraint failed')) {
+          return res.status(400).json({ message: 'Email already exists' });
         }
-        return res.status(500).json({ message: 'Database error' });
+        console.error('Registration error:', err);
+        return res.status(500).json({ message: 'Registration failed' });
       }
 
+      const userId = this.lastID;
       const token = jwt.sign(
-        { id: this.lastID, username, role },
+        { id: userId, email, role: 'user' },
         JWT_SECRET,
         { expiresIn: '24h' }
       );
@@ -34,25 +60,51 @@ router.post('/register', async (req, res) => {
       res.status(201).json({
         token,
         user: {
-          id: this.lastID,
-          username,
-          role
+          id: userId,
+          email,
+          role: 'user'
         }
       });
-    }
-  );
+    });
+  } catch (err: any) {
+    console.error('Registration error:', err);
+    return res.status(500).json({ message: 'Registration failed' });
+  }
 });
 
 // Login user
-router.post('/login', async (req, res) => {
-  const { username, password, role } = req.body;
+router.post('/login', async (req: CustomRequest, res) => {
+  const { email, password } = req.body;
 
-  db.get(
-    'SELECT * FROM users WHERE username = ? AND role = ?',
-    [username, role],
-    async (err, user: any) => {
+  if (!email || !password) {
+    return res.status(400).json({ message: 'Email and password are required' });
+  }
+
+  try {
+    // Check for admin credentials first
+    if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+      const token = jwt.sign(
+        { id: 'admin', email: ADMIN_EMAIL, role: ADMIN_ROLE },
+        JWT_SECRET,
+        { expiresIn: '24h' }
+      );
+
+      return res.json({
+        token,
+        user: {
+          id: 'admin',
+          email: ADMIN_EMAIL,
+          role: ADMIN_ROLE
+        }
+      });
+    }
+
+    // Check for regular user
+    const stmt = req.db.prepare('SELECT * FROM users WHERE email = ?');
+    stmt.get(email, async (err: Error | null, user: User) => {
       if (err) {
-        return res.status(500).json({ message: 'Database error' });
+        console.error('Login error:', err);
+        return res.status(500).json({ message: 'Login failed' });
       }
 
       if (!user) {
@@ -65,7 +117,7 @@ router.post('/login', async (req, res) => {
       }
 
       const token = jwt.sign(
-        { id: user.id, username: user.username, role: user.role },
+        { id: user.id, email: user.email, role: user.role },
         JWT_SECRET,
         { expiresIn: '24h' }
       );
@@ -74,12 +126,15 @@ router.post('/login', async (req, res) => {
         token,
         user: {
           id: user.id,
-          username: user.username,
+          email: user.email,
           role: user.role
         }
       });
-    }
-  );
+    });
+  } catch (err) {
+    console.error('Login error:', err);
+    return res.status(500).json({ message: 'Login failed' });
+  }
 });
 
 export default router; 
