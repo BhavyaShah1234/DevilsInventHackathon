@@ -50,7 +50,7 @@ const Navbar: React.FC = () => {
     e.preventDefault();
     try {
       setIsLoading(true);
-      await login(loginForm.username, loginForm.password);
+      await login(loginForm.username, loginForm.password, 'user');
       setShowLogin(false);
       setLoginForm({ username: '', password: '' });
     } catch (error) {

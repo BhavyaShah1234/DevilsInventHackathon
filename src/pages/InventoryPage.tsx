@@ -28,7 +28,7 @@ const InventoryPage: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<string>('all');
 
   const refreshInventory = () => {
-    fetch('http://localhost:5001/api/items')
+    fetch('http://localhost:3001/api/items')
       .then(res => res.json())
       .then(data => {
         setInventoryItems(data);
@@ -38,7 +38,7 @@ const InventoryPage: React.FC = () => {
   };
 
   const refreshLogs = () => {
-    fetch('http://localhost:5001/api/logs')
+    fetch('http://localhost:3001/api/logs')
       .then(res => res.json())
       .then(data => setLogs(data))
       .catch(err => console.error('Error refreshing logs:', err));
