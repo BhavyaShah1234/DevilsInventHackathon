@@ -52,6 +52,19 @@ const db = new sqlite3.Database(dbPath, async (err) => {
     )
   `);
 
+  // Create quality_checks table
+  db.run(`
+    CREATE TABLE IF NOT EXISTS quality_checks (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      item_id INTEGER NOT NULL,
+      check_type TEXT NOT NULL,
+      status TEXT NOT NULL,
+      notes TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (item_id) REFERENCES inventory(id)
+    )
+  `);
+
   // Insert test user
   const testUserPassword = 'Test123!';
   const hashedPassword = await bcrypt.hash(testUserPassword, 10);
