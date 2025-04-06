@@ -2,6 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Bell, User, Settings, Home, Box, Sliders, Moon, Sun, X } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { Card } from "./ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 
 interface Notification {
   id: string;
@@ -11,10 +15,21 @@ interface Notification {
   archived: boolean;
 }
 
+interface LoginForm {
+  email: string;
+  password: string;
+}
+
+interface RegisterForm {
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+
 const Navbar: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { isAuthenticated, user, login, logout } = useAuth();
+  const { isAuthenticated, user, login, logout, register } = useAuth();
   const [showLogin, setShowLogin] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
@@ -22,9 +37,14 @@ const Navbar: React.FC = () => {
   const [viewArchived, setViewArchived] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [loginForm, setLoginForm] = useState({
-    username: '',
-    password: ''
+  const [loginForm, setLoginForm] = useState<LoginForm>({
+    email: "",
+    password: "",
+  });
+  const [registerForm, setRegisterForm] = useState<RegisterForm>({
+    email: "",
+    password: "",
+    confirmPassword: "",
   });
 
   useEffect(() => {
@@ -48,28 +68,54 @@ const Navbar: React.FC = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!loginForm.email || !loginForm.password) {
+      alert("Please fill in all fields");
+      return;
+    }
+
     try {
       setIsLoading(true);
-      await login(loginForm.username, loginForm.password, 'user');
-      setShowLogin(false);
-      setLoginForm({ username: '', password: '' });
+      await login(loginForm.email, loginForm.password, 'user');
+      navigate("/");
     } catch (error) {
-      console.error('Login failed:', error);
+      console.error("Login error:", error);
+      alert("Failed to login");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleLogout = async () => {
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (
+      !registerForm.email ||
+      !registerForm.password ||
+      !registerForm.confirmPassword
+    ) {
+      alert("Please fill in all fields");
+      return;
+    }
+
+    if (registerForm.password !== registerForm.confirmPassword) {
+      alert("Passwords do not match");
+      return;
+    }
+
     try {
       setIsLoading(true);
-      await logout();
-      navigate('/login');
+      await register(registerForm.email, registerForm.password);
+      navigate("/");
     } catch (error) {
-      console.error('Logout failed:', error);
+      console.error("Registration error:", error);
+      alert("Failed to register");
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
   };
 
   const toggleLogin = () => setShowLogin(!showLogin);
@@ -160,16 +206,16 @@ const Navbar: React.FC = () => {
           <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-80 text-black dark:text-white">
             <h2 id="login-title" className="text-lg font-semibold mb-4">Sign In</h2>
             <form onSubmit={handleLogin}>
-              <input
-                type="text"
-                placeholder="Username"
-                value={loginForm.username}
-                onChange={(e) => setLoginForm(prev => ({ ...prev, username: e.target.value }))}
+              <Input
+                type="email"
+                placeholder="Email"
+                value={loginForm.email}
+                onChange={(e) => setLoginForm(prev => ({ ...prev, email: e.target.value }))}
                 className="w-full mb-3 px-3 py-2 rounded bg-gray-100 dark:bg-gray-700 text-black dark:text-white border border-gray-300 dark:border-gray-600"
                 required
-                aria-label="Username"
+                aria-label="Email"
               />
-              <input
+              <Input
                 type="password"
                 placeholder="Password"
                 value={loginForm.password}
@@ -179,13 +225,13 @@ const Navbar: React.FC = () => {
                 aria-label="Password"
               />
               <div className="flex justify-between">
-                <button
+                <Button
                   type="submit"
                   className="bg-blue-600 hover:bg-blue-700 text-white py-1 px-4 rounded disabled:opacity-50"
                   disabled={isLoading}
                 >
                   {isLoading ? 'Logging in...' : 'Login'}
-                </button>
+                </Button>
                 <button
                   type="button"
                   onClick={toggleLogin}
@@ -334,12 +380,74 @@ const Navbar: React.FC = () => {
               <User size={16} /> <span className="text-sm">Logout</span>
             </button>
           ) : (
-            <button
-              onClick={toggleLogin}
-              className="flex items-center gap-2 px-3 py-2 border rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-black dark:text-white"
-            >
-              <User size={16} /> <span className="text-sm">Sign In</span>
-            </button>
+            <Card className="p-4">
+              <Tabs defaultValue="login">
+                <TabsList>
+                  <TabsTrigger value="login">Login</TabsTrigger>
+                  <TabsTrigger value="register">Register</TabsTrigger>
+                </TabsList>
+                <TabsContent value="login">
+                  <form onSubmit={handleLogin} className="space-y-4">
+                    <Input
+                      type="email"
+                      placeholder="Email"
+                      value={loginForm.email}
+                      onChange={(e) => setLoginForm(prev => ({ ...prev, email: e.target.value }))}
+                      className="w-full mb-3 px-3 py-2 rounded bg-gray-100 dark:bg-gray-700 text-black dark:text-white border border-gray-300 dark:border-gray-600"
+                      required
+                      aria-label="Email"
+                    />
+                    <Input
+                      type="password"
+                      placeholder="Password"
+                      value={loginForm.password}
+                      onChange={(e) => setLoginForm(prev => ({ ...prev, password: e.target.value }))}
+                    />
+                    <Button type="submit" disabled={isLoading}>
+                      {isLoading ? "Loading..." : "Login"}
+                    </Button>
+                  </form>
+                </TabsContent>
+                <TabsContent value="register">
+                  <form onSubmit={handleRegister} className="space-y-4">
+                    <Input
+                      type="email"
+                      placeholder="Email"
+                      value={registerForm.email}
+                      onChange={(e) => setRegisterForm(prev => ({ ...prev, email: e.target.value }))}
+                      className="w-full mb-3 px-3 py-2 rounded bg-gray-100 dark:bg-gray-700 text-black dark:text-white border border-gray-300 dark:border-gray-600"
+                      required
+                      aria-label="Email"
+                    />
+                    <Input
+                      type="password"
+                      placeholder="Password"
+                      value={registerForm.password}
+                      onChange={(e) =>
+                        setRegisterForm({
+                          ...registerForm,
+                          password: e.target.value,
+                        })
+                      }
+                    />
+                    <Input
+                      type="password"
+                      placeholder="Confirm Password"
+                      value={registerForm.confirmPassword}
+                      onChange={(e) =>
+                        setRegisterForm({
+                          ...registerForm,
+                          confirmPassword: e.target.value,
+                        })
+                      }
+                    />
+                    <Button type="submit" disabled={isLoading}>
+                      {isLoading ? "Loading..." : "Register"}
+                    </Button>
+                  </form>
+                </TabsContent>
+              </Tabs>
+            </Card>
           )}
           <button
             onClick={toggleSettings}
