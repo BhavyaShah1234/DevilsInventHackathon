@@ -9,7 +9,7 @@ const db = new Database(path.join(__dirname, '../../database.sqlite'));
 // Get all robot paths
 router.get('/', authenticateToken, (req, res) => {
   if (!req.user) {
-    return res.status(401).json({ error: 'Authentication required' });
+    return res.status(401).json({ error: 'Unauthorized' });
   }
   const userId = req.user.id;
 
@@ -32,7 +32,7 @@ router.get('/', authenticateToken, (req, res) => {
 // Get a single robot path
 router.get('/:id', authenticateToken, (req, res) => {
   if (!req.user) {
-    return res.status(401).json({ error: 'Authentication required' });
+    return res.status(401).json({ error: 'Unauthorized' });
   }
   const userId = req.user.id;
 
@@ -58,7 +58,7 @@ router.get('/:id', authenticateToken, (req, res) => {
 // Create new robot path (admin only)
 router.post('/', authenticateToken, isAdmin, (req, res) => {
   if (!req.user) {
-    return res.status(401).json({ error: 'Authentication required' });
+    return res.status(401).json({ error: 'Unauthorized' });
   }
   const userId = req.user.id;
 
@@ -115,7 +115,7 @@ router.post('/', authenticateToken, isAdmin, (req, res) => {
 // Update robot path status (admin only)
 router.patch('/:id/status', authenticateToken, isAdmin, (req, res) => {
   if (!req.user) {
-    return res.status(401).json({ error: 'Authentication required' });
+    return res.status(401).json({ error: 'Unauthorized' });
   }
   const userId = req.user.id;
 
@@ -164,7 +164,7 @@ router.patch('/:id/status', authenticateToken, isAdmin, (req, res) => {
 // Get path statistics
 router.get('/stats/summary', authenticateToken, (req, res) => {
   if (!req.user) {
-    return res.status(401).json({ error: 'Authentication required' });
+    return res.status(401).json({ error: 'Unauthorized' });
   }
   const userId = req.user.id;
 
@@ -193,7 +193,7 @@ router.get('/stats/summary', authenticateToken, (req, res) => {
 // Get inspection points
 router.get('/inspection-points', authenticateToken, (req, res) => {
   if (!req.user) {
-    return res.status(401).json({ error: 'Authentication required' });
+    return res.status(401).json({ error: 'Unauthorized' });
   }
   const userId = req.user.id;
 
@@ -209,7 +209,7 @@ router.get('/inspection-points', authenticateToken, (req, res) => {
 // Add inspection point (admin only)
 router.post('/inspection-points', authenticateToken, isAdmin, (req, res) => {
   if (!req.user) {
-    return res.status(401).json({ error: 'Authentication required' });
+    return res.status(401).json({ error: 'Unauthorized' });
   }
   const userId = req.user.id;
 

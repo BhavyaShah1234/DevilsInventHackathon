@@ -1,6 +1,6 @@
 import React from 'react';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import ControlPage from "./pages/ControlPage";
@@ -10,7 +10,7 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import { AuthProvider } from "./contexts/AuthContext";
 import ErrorBoundary from "./components/ErrorBoundary";
-import './App.css'
+import './App.css';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -21,10 +21,10 @@ const queryClient = new QueryClient({
   },
 });
 
-const App = () => {
+function App() {
   return (
-    <ErrorBoundary>
-      <BrowserRouter>
+    <Router>
+      <ErrorBoundary>
         <QueryClientProvider client={queryClient}>
           <AuthProvider>
             <Routes>
@@ -38,8 +38,8 @@ const App = () => {
             </Routes>
           </AuthProvider>
         </QueryClientProvider>
-      </BrowserRouter>
-    </ErrorBoundary>
+      </ErrorBoundary>
+    </Router>
   );
 }
 

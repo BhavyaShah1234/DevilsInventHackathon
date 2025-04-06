@@ -46,6 +46,7 @@ const Navbar: React.FC = () => {
     password: "",
     confirmPassword: "",
   });
+  const [error, setError] = useState('');
 
   useEffect(() => {
     // Fetch notifications from API
@@ -68,18 +69,14 @@ const Navbar: React.FC = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!loginForm.email || !loginForm.password) {
-      alert("Please fill in all fields");
-      return;
-    }
-
     try {
       setIsLoading(true);
-      await login(loginForm.email, loginForm.password, 'user');
-      navigate("/");
+      await login(loginForm.email, loginForm.password);
+      setShowLogin(false);
+      setLoginForm({ email: '', password: '' });
     } catch (error) {
-      console.error("Login error:", error);
-      alert("Failed to login");
+      console.error('Login error:', error);
+      setError('Invalid username or password');
     } finally {
       setIsLoading(false);
     }
