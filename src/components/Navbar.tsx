@@ -45,7 +45,6 @@ const Navbar: React.FC = () => {
     notifications,
     isLoading,
     error,
-    fetchNotifications,
     archiveNotification,
     restoreNotification
   } = useNotifications();

@@ -24,7 +24,7 @@ const db = new Database(path.join(__dirname, '../database.sqlite'), (err) => {
 
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:8082', 'http://localhost:8083', 'http://localhost:8084', 'http://localhost:8085', 'http://localhost:3001'],
+  origin: ['http://localhost:8082', 'http://localhost:8083', 'http://localhost:8084', 'http://localhost:8085', 'http://localhost:3001', 'http://10.157.220.96:3001'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],

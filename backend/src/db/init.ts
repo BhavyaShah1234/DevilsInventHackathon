@@ -56,12 +56,16 @@ const db = new sqlite3.Database(dbPath, async (err) => {
   db.run(`
     CREATE TABLE IF NOT EXISTS quality_checks (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      item_id INTEGER NOT NULL,
-      check_type TEXT NOT NULL,
+      component_id INTEGER NOT NULL,
+      inspection_point_id INTEGER NOT NULL,
       status TEXT NOT NULL,
       notes TEXT,
+      inspector_id INTEGER,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (item_id) REFERENCES inventory(id)
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (inspector_id) REFERENCES users(id),
+      FOREIGN KEY (component_id) REFERENCES inventory(id),
+      FOREIGN KEY (inspection_point_id) REFERENCES inspection_points(id)
     )
   `);
 

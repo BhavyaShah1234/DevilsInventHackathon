@@ -14,14 +14,15 @@ interface QualityCheck {
   id: number;
   component_id: number;
   component_name: string;
-  inspection_point: string;
+  inspection_point_id: number;
   status: 'pass' | 'fail';
   created_at: string;
   quantity: number;
 }
 
 interface QualityPattern {
-  inspection_point: string;
+  inspection_point_id: number;
+  inspection_point_name: string;
   status: 'pass' | 'fail';
   count: number;
   date: string;
@@ -67,12 +68,14 @@ export class AutomationService {
   static async analyzeQualityPatterns(): Promise<{ patterns: QualityPattern[], issues: QualityPattern[] }> {
     const query = `
       SELECT 
-        inspection_point,
-        status,
+        qc.inspection_point_id,
+        qc.status,
         COUNT(*) as count,
-        strftime('%Y-%m-%d', created_at) as date
-      FROM quality_checks
-      GROUP BY inspection_point, status, date
+        strftime('%Y-%m-%d', qc.created_at) as date,
+        ip.name as inspection_point_name
+      FROM quality_checks qc
+      JOIN inspection_points ip ON qc.inspection_point_id = ip.id
+      GROUP BY qc.inspection_point_id, qc.status, date
       ORDER BY date DESC, count DESC
     `;
     
@@ -99,7 +102,7 @@ export class AutomationService {
           
           db.run(logQuery, [
             'warning',
-            `Potential quality issue detected at ${issue.inspection_point}: ${issue.count} failures on ${issue.date}`,
+            `Potential quality issue detected at ${issue.inspection_point_name}: ${issue.count} failures on ${issue.date}`,
             'quality'
           ]);
         });
@@ -112,7 +115,7 @@ export class AutomationService {
   // Update inventory based on quality checks
   static async updateInventoryFromQualityChecks(): Promise<QualityCheck[]> {
     const query = `
-      SELECT qc.*, i.component_name, i.quantity
+      SELECT qc.*, i.name as component_name, i.quantity
       FROM quality_checks qc
       JOIN inventory i ON qc.component_id = i.id
       WHERE qc.status = 'fail'

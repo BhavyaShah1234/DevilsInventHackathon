@@ -33,13 +33,15 @@ CREATE TABLE IF NOT EXISTS inventory (
 CREATE TABLE IF NOT EXISTS quality_checks (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     component_id INTEGER NOT NULL,
-    inspection_point TEXT NOT NULL,
+    inspection_point_id INTEGER NOT NULL,
     status TEXT NOT NULL, -- 'pass', 'fail', 'pending'
     notes TEXT,
     inspector_id INTEGER,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (inspector_id) REFERENCES users(id),
-    FOREIGN KEY (component_id) REFERENCES inventory(id)
+    FOREIGN KEY (component_id) REFERENCES inventory(id),
+    FOREIGN KEY (inspection_point_id) REFERENCES inspection_points(id)
 );
 
 -- Create robot paths table
